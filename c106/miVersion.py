@@ -1,0 +1,40 @@
+import cv2
+
+
+# Crear nuestro clasificador de cuerpos
+body_classifier = cv2.CascadeClassifier('haarcascade_fullbody.xml')
+
+# Inicializar la captura de video para nuestro archivo de video
+cap = cv2.VideoCapture('walking.avi')
+
+# Comenzar el bucle una vez que el video esté cargado exitosamente
+while True:
+    
+    # Leer el primer cuadro
+    ret, frame = cap.read()
+
+    # Convertir cada cuadro a escala de grises
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) 
+    # Pasar el cuadro a nuestro clasificador de cuerpos
+    cuerpos = body_classifier.detectMultiScale(gray, 1.2, 3)
+    # Extraer las cajas envolventes para cualquier cuerpo identificado
+    for (x, y, w, h ) in cuerpos:
+        cv2.rectangle(frame, (x, y ), (x + w, y + y), (0, 255, 255), 2)
+        cv2.imshow("personas", frame)
+
+        # Contar el número de personas detectadas
+        num_personas = len(cuerpos)
+
+        cv2.putText(frame,
+            f"Personas: {num_personas}",
+            (15,50),
+            cv2.FONT_HERSHEY_COMPLEX,
+            1,
+            (255,255,255)
+        )
+
+    if cv2.waitKey(1) == 32: #32 es la barra espaciadora
+        break
+
+cap.release()
+cv2.destroyAllWindows()
